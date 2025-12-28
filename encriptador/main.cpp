@@ -2,6 +2,10 @@
 #include <iostream>
 #include <string>
 
+constexpr int CAESAR_SHIFT = 3;
+constexpr char EXIT_COMMAND[] = "exit";
+constexpr char SAVE_FILE[] = "messages.dat";
+
 int main() {
 	std::cout << "Hello World!\n";
 

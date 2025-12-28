@@ -128,7 +128,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Crypto.cpp" />
-    <ClCompile Include="encriptador.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="FileManager.cpp" />
     <ClCompile Include="MessageManager.cpp" />
   </ItemGroup>
