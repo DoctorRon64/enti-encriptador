@@ -4,18 +4,18 @@
 
 class FileManager {
 public:
-	static bool FileExists(const std::string& filename);
+	bool FileExists(const std::string& filename);
 
-	static bool LoadFromFile(
-		const std::string& filename,
-		std::vector<std::string>& outMessages,
-		int& outChecksum
+	bool LoadFromFile(
+	   const std::string& filename,
+	   std::vector<std::string>& outMessages,
+	   int& outChecksum
 	);
 
-	static bool SaveToFile(
-		const std::string& filename,
-		const std::vector<std::string>& messages,
-		int checksum,
-		bool append
+	bool SaveToFile(
+	   const std::string& filename,
+	   const std::vector<std::string>& messages,
+	   int checksum,
+	   bool append
 	);
 };
