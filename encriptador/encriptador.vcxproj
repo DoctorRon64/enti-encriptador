@@ -128,8 +128,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Crypto.cpp" />
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="FileManager.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="MessageManager.cpp" />
   </ItemGroup>
   <ItemGroup>
