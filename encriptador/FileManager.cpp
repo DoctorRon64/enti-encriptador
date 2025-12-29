@@ -1,13 +1,13 @@
 #include "FileManager.h"
 #include <fstream>
-#include <iostream>
+#include <limits>
 
-bool FileManager::FileExists(const std::string& filename) {
+bool FileManager::FileExists(const std::string& filename) const {
 	std::ifstream file(filename);
 	return file.good();
 }
 
-bool FileManager::LoadFromFile(const std::string& filename, std::vector<std::string>& outMessages, int& outChecksum) {
+bool FileManager::LoadFromFile(const std::string& filename, std::vector<std::string>& outMessages, int& outChecksum) const {
 	std::ifstream inFile(filename);
 
 	if(!inFile.is_open()) {
@@ -30,7 +30,7 @@ bool FileManager::LoadFromFile(const std::string& filename, std::vector<std::str
 	return true;
 }
 
-bool FileManager::SaveToFile(const std::string& filename, const std::vector<std::string>& messages, int checksum, bool append) {
+bool FileManager::SaveToFile(const std::string& filename, const std::vector<std::string>& messages, int checksum, bool append) const {
 	std::ios::openmode mode = std::ios::out;
 
 	if(append) {
