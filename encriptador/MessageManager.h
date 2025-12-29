@@ -2,6 +2,8 @@
 #include <string>
 #include <vector>
 
+//Manages during runtime the storage of user messages.
+
 class MessageManager {
 public:
 	MessageManager();

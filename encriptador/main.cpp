@@ -5,7 +5,9 @@
 #include <string>
 #include <vector>
 
-constexpr int CAESAR_SHIFT = 3;
+// Program entry point that controls user interaction, program flow, and module coordination.
+
+constexpr short CAESAR_SHIFT = 3;
 constexpr char EXIT_COMMAND[] = "exit";
 constexpr char SAVE_FILE[] = "messages.dat";
 
