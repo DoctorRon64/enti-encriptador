@@ -1,9 +1,11 @@
+#include "Crypto.h"
 #include "FileManager.h"
 #include "MessageManager.h"
 #include <iostream>
 #include <string>
 #include <vector>
 
+constexpr int CAESAR_SHIFT = 3;
 constexpr char EXIT_COMMAND[] = "exit";
 constexpr char SAVE_FILE[] = "messages.dat";
 
@@ -11,14 +13,37 @@ int main() {
 	MessageManager messageManager;
 	FileManager fileManager;
 
-	if(fileManager.FileExists(SAVE_FILE)) {
-		std::vector<std::string> loadedMessages;
-		int storedChecksum = 0;
+	bool recoveredMessages = false;
+	bool fileExists = fileManager.FileExists(SAVE_FILE);
 
-		fileManager.LoadFromFile(SAVE_FILE, loadedMessages, storedChecksum);
+	if(fileExists) {
+		std::cout << "Previous messages found. Do you want to recover them? (y/n): ";
+		char choice;
+		std::cin >> choice;
+		std::cin.ignore();
 
-		for(const std::string& msg : loadedMessages) {
-			messageManager.AddMessage(msg);
+		if(choice == 'y' || choice == 'Y') {
+			std::vector<std::string> encryptedMessages;
+			int storedChecksum = 0;
+
+			fileManager.LoadFromFile(SAVE_FILE, encryptedMessages, storedChecksum);
+
+			int calculatedChecksum = 0;
+
+			for(const std::string& enc : encryptedMessages) {
+				int msgChecksum = 0;
+				std::string decrypted = Crypto::Decrypt(enc, CAESAR_SHIFT, msgChecksum);
+
+				calculatedChecksum += msgChecksum;
+				messageManager.AddMessage(decrypted);
+				std::cout << decrypted << std::endl;
+			}
+
+			if(calculatedChecksum != storedChecksum) {
+				std::cout << "WARNING: The file has been altered!" << std::endl;
+			}
+
+			recoveredMessages = true;
 		}
 	}
 
@@ -36,14 +61,25 @@ int main() {
 	}
 
 	std::cout << "Do you want to save data? (y/n): ";
-	char choice;
-	std::cin >> choice;
+	char saveChoice;
+	std::cin >> saveChoice;
 
-	if(choice == 'y' || choice == 'Y') {
-		fileManager.SaveToFile(
-			SAVE_FILE,
-			messageManager.GetMessages(), 0, false
-		);
+	if(saveChoice == 'y' || saveChoice == 'Y') {
+		std::vector<std::string> encryptedMessages;
+		int calculatedChecksum = 0;
+
+		for(const std::string& msg : messageManager.GetMessages()) {
+			int msgChecksum = 0;
+			std::string encrypted = Crypto::Encrypt(msg, CAESAR_SHIFT, msgChecksum);
+
+			calculatedChecksum += msgChecksum;
+			encryptedMessages.push_back(encrypted);
+		}
+
+		fileManager.SaveToFile(SAVE_FILE, encryptedMessages, calculatedChecksum, recoveredMessages);
+	}
+	else if(fileExists && !recoveredMessages) {
+		std::cout << "Se ha eliminado el texto anterior!" << std::endl;
 	}
 
 	return 0;
