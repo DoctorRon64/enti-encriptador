@@ -6,18 +6,12 @@
 
 class FileManager {
 public:
+	// Checks whether the save file exists on disk.
 	bool FileExists(const std::string& filename) const;
 
-	bool LoadFromFile(
-		const std::string& filename,
-		std::vector<std::string>& outMessages,
-		int& outChecksum
-	) const;
+	// Loads encrypted messages and checksum from file.
+	bool LoadFromFile(const std::string& filename, std::vector<std::string>& outMessages, int& outChecksum) const;
 
-	bool SaveToFile(
-		const std::string& filename,
-		const std::vector<std::string>& messages,
-		int checksum,
-		bool append
-	) const;
+	// Saves encrypted messages and checksum to file.
+	bool SaveToFile(const std::string& filename, const std::vector<std::string>& messages, int checksum, bool append) const;
 };
