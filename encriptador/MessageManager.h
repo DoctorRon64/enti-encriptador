@@ -4,16 +4,12 @@
 
 //Manages during runtime the storage of user messages.
 
-class MessageManager {
-public:
-	MessageManager();
-	~MessageManager();
+namespace MessageManager {
+	extern std::vector<std::string> messages;
 
 	void AddMessage(const std::string& message);
-	void SaveMessages(const std::string& filename);
-	void LoadMessages(const std::string& filename);
-	const std::vector<std::string>& GetMessages() const;
+	std::vector<std::string>& GetMessages();
 
-private:
-	std::vector<std::string> messages;
-};
+	void SaveMessages(const std::string& filename);
+	void LoadMessagesFromFile(const std::string& filename);
+}
