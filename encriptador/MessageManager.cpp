@@ -1,48 +1,53 @@
+﻿#include "Crypto.h"
+#include "FileManager.h"
 #include "MessageManager.h"
-#include <fstream>
 #include <iostream>
 
-MessageManager::MessageManager() {}
+namespace MessageManager {
+	std::vector<std::string> messages;
 
-MessageManager::~MessageManager() {}
-
-void MessageManager::AddMessage(const std::string& message) {
-	messages.push_back(message);
-}
-
-void MessageManager::SaveMessages(const std::string& filename) {
-	std::ofstream outFile(filename, std::ios::out | std::ios::trunc);
-
-	if(!outFile.is_open()) {
-		std::cerr << "Error opening file for writing.\n";
-		return;
+	void AddMessage(const std::string& message) {
+		messages.push_back(message);
 	}
 
-	for(const std::string& message : messages) {
-		outFile << message << std::endl;
+	std::vector<std::string>& GetMessages() {
+		return messages;
 	}
 
-	outFile.close();
-}
+	void SaveMessages(const std::string& filename) {
+		constexpr int SHIFT = 3;
+		std::vector<std::string> encrypted;
+		int checksum = 0;
 
-void MessageManager::LoadMessages(const std::string& filename) {
-	std::ifstream inFile(filename);
+		for(const auto& msg : messages) {
+			int msgChecksum = 0;
+			encrypted.push_back(Crypto::Encrypt(msg, SHIFT, msgChecksum));
+			checksum += msgChecksum;
+		}
 
-	if(!inFile.is_open()) {
-		std::cerr << "Error opening file for reading.\n";
-		return;
+		if(!FileManager::SaveToFile(filename, encrypted, checksum)) {
+			std::cerr << "Error saving messages!\n";
+		}
 	}
 
-	messages.clear();
+	void LoadMessagesFromFile(const std::string& filename) {
+		constexpr int SHIFT = 3;
+		messages.clear();
 
-	std::string line;
-	while(std::getline(inFile, line)) {
-		messages.push_back(line);
+		std::vector<std::string> encrypted;
+		int storedChecksum = 0;
+
+		if(!FileManager::LoadFromFile(filename, encrypted, storedChecksum)) return;
+
+		int calculatedChecksum = 0;
+		for(const auto& enc : encrypted) {
+			int msgChecksum = 0;
+			messages.push_back(Crypto::Decrypt(enc, SHIFT, msgChecksum));
+			calculatedChecksum += msgChecksum;
+		}
+
+		if(calculatedChecksum != storedChecksum) {
+			std::cout << "WARNING: File checksum mismatch!\n";
+		}
 	}
-
-	inFile.close();
-}
-
-const std::vector<std::string>& MessageManager::GetMessages() const {
-	return messages;
 }

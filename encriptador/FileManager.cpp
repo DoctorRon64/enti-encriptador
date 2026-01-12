@@ -2,58 +2,38 @@
 #include <fstream>
 #include <limits>
 
-bool FileManager::FileExists(const std::string& filename) const {
-	std::ifstream file(filename);
-	return file.good();
-}
-
-bool FileManager::LoadFromFile(const std::string& filename, std::vector<std::string>& outMessages, int& outChecksum) const {
-	std::ifstream inFile(filename);
-
-	if(!inFile.is_open()) {
-		return false;
+namespace FileManager {
+	bool FileExists(const std::string& filename) {
+		std::ifstream file(filename);
+		return file.good();
 	}
 
-	outMessages.clear();
+	bool LoadFromFile(const std::string& filename, std::vector<std::string>& outMessages, int& outChecksum) {
+		std::ifstream inFile(filename);
+		if(!inFile.is_open()) return false;
 
-	inFile >> outChecksum;
-	inFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+		outMessages.clear();
 
-	std::string line;
-	while(std::getline(inFile, line)) {
-		if(!line.empty()) {
-			outMessages.push_back(line);
+		inFile >> outChecksum; // First line is checksum
+		inFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+		std::string line;
+		while(std::getline(inFile, line)) {
+			if(!line.empty()) outMessages.push_back(line);
 		}
+
+		return true;
 	}
 
-	inFile.close();
-	return true;
-}
+	bool SaveToFile(const std::string& filename, const std::vector<std::string>& messages, int checksum) {
+		std::ofstream outFile(filename, std::ios::out | std::ios::trunc);
+		if(!outFile.is_open()) return false;
 
-bool FileManager::SaveToFile(const std::string& filename, const std::vector<std::string>& messages, int checksum, bool append) const {
-	std::ios::openmode mode = std::ios::out;
+		outFile << checksum << '\n'; // Write checksum first
+		for(const auto& msg : messages) {
+			outFile << msg << '\n';
+		}
 
-	if(append) {
-		mode |= std::ios::app;
+		return true;
 	}
-	else {
-		mode |= std::ios::trunc;
-	}
-
-	std::ofstream outFile(filename, mode);
-
-	if(!outFile.is_open()) {
-		return false;
-	}
-
-	if(!append) {
-		outFile << checksum << std::endl;
-	}
-
-	for(const std::string& message : messages) {
-		outFile << message << std::endl;
-	}
-
-	outFile.close();
-	return true;
 }
