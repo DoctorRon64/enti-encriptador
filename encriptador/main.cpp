@@ -11,6 +11,7 @@ int main() {
 	std::vector<std::string> messages;
 	bool recoveredMessages = false;
 	bool hadPreviousFile = FileExists(SAVE_FILE);
+	bool declinedRecovery = false;
 
 	if(hadPreviousFile) {
 		std::cout << "Previous messages found. Do you want to recover them? (y/n): ";
@@ -29,6 +30,8 @@ int main() {
 				}
 				recoveredMessages = true;
 			}
+		} else {
+			declinedRecovery = true;
 		}
 	}
 
@@ -47,10 +50,18 @@ int main() {
 	std::cin >> saveChoice;
 
 	if(saveChoice == 'y' || saveChoice == 'Y') {
-		if(hadPreviousFile && !recoveredMessages) {
+		if(hadPreviousFile && declinedRecovery) {
 			std::cout << "The previous text has been deleted!\n";
 		}
 		SaveMessagesToFile(SAVE_FILE, messages);
+	} else {
+		if(hadPreviousFile && declinedRecovery) {
+			if(DeleteFile(SAVE_FILE)) {
+				std::cout << "The previous text has been deleted!\n";
+			} else {
+				std::cout << "Unable to delete previous text.\n";
+			}
+		}
 	}
 
 	return 0;

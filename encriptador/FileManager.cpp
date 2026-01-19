@@ -1,4 +1,5 @@
 #include "FileManager.h"
+#include <cstdio>
 #include <fstream>
 #include <limits>
 
@@ -34,4 +35,8 @@ bool SaveToFile(const std::string& filename, const std::vector<std::string>& mes
 	}
 
 	return true;
+}
+
+bool DeleteFile(const std::string& filename) {
+	return std::remove(filename.c_str()) == 0;
 }

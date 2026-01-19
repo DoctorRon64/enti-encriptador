@@ -10,3 +10,6 @@ bool LoadFromFile(const std::string& filename, std::vector<std::string>& outMess
 
 // Save encrypted messages and checksum to a file.
 bool SaveToFile(const std::string& filename, const std::vector<std::string>& messages, int checksum);
+
+// Delete a file if it exists.
+bool DeleteFile(const std::string& filename);
