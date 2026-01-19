@@ -2,25 +2,33 @@
 #include "MessageManager.h"
 #include <iostream>
 #include <string>
+#include <vector>
 
 constexpr char EXIT_COMMAND[] = "exit";
 constexpr char SAVE_FILE[] = "messages.dat";
 
 int main() {
+	std::vector<std::string> messages;
 	bool recoveredMessages = false;
+	bool hadPreviousFile = FileExists(SAVE_FILE);
 
-	if(FileManager::FileExists(SAVE_FILE)) {
+	if(hadPreviousFile) {
 		std::cout << "Previous messages found. Do you want to recover them? (y/n): ";
 		char choice;
 		std::cin >> choice;
 		std::cin.ignore();
 
 		if(choice == 'y' || choice == 'Y') {
-			MessageManager::LoadMessagesFromFile(SAVE_FILE);
-			for(const auto& msg : MessageManager::GetMessages()) {
-				std::cout << msg << std::endl;
+			bool checksumValid = true;
+			if(LoadMessagesFromFile(SAVE_FILE, messages, checksumValid)) {
+				for(const auto& msg : messages) {
+					std::cout << msg << std::endl;
+				}
+				if(!checksumValid) {
+					std::cout << "WARNING: File checksum mismatch!\n";
+				}
+				recoveredMessages = true;
 			}
-			recoveredMessages = true;
 		}
 	}
 
@@ -31,7 +39,7 @@ int main() {
 		std::getline(std::cin, input);
 		if(input == EXIT_COMMAND) break;
 
-		MessageManager::AddMessage(input);
+		AddMessage(messages, input);
 	}
 
 	std::cout << "Do you want to save data? (y/n): ";
@@ -39,11 +47,10 @@ int main() {
 	std::cin >> saveChoice;
 
 	if(saveChoice == 'y' || saveChoice == 'Y') {
-		if(!recoveredMessages) {
-			// Overwrite old file if user wants
+		if(hadPreviousFile && !recoveredMessages) {
 			std::cout << "The previous text has been deleted!\n";
 		}
-		MessageManager::SaveMessages(SAVE_FILE);
+		SaveMessagesToFile(SAVE_FILE, messages);
 	}
 
 	return 0;

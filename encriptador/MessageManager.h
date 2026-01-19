@@ -2,14 +2,9 @@
 #include <string>
 #include <vector>
 
-//Manages during runtime the storage of user messages.
+// Message helpers for encrypting and saving chat history.
 
-namespace MessageManager {
-	extern std::vector<std::string> messages;
+void AddMessage(std::vector<std::string>& messages, const std::string& message);
 
-	void AddMessage(const std::string& message);
-	std::vector<std::string>& GetMessages();
-
-	void SaveMessages(const std::string& filename);
-	void LoadMessagesFromFile(const std::string& filename);
-}
+bool LoadMessagesFromFile(const std::string& filename, std::vector<std::string>& outMessages, bool& outChecksumValid);
+bool SaveMessagesToFile(const std::string& filename, const std::vector<std::string>& messages);
